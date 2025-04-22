@@ -52,14 +52,8 @@ This project began as a personal challenge to create a secure, offline password 
 1. Download the repo as a `.zip` file.
 2. Extract to a folder with script execution permissions.
 3. Run `CONFIG.bat` to initialize folders and organize files.
-4. Launch with `START.bat`.
-5. (Optional) Create a desktop shortcut for `START.bat`.
-
----
-
-## Configuration
-
-- All configuration values are stored in the `.psd1` file.
+4. Launch with `PSK_APPLICATION.bat`.
+5. (Optional) Create a desktop shortcut for `PSK_APPLICATION.bat`.
 
 ---
 
@@ -67,16 +61,16 @@ This project began as a personal challenge to create a secure, offline password 
 
 ### First Run
 
-- Run `START.bat`.
+- Run `PSK_APPLICATION.bat`.
 - Set a 4-digit PIN on first launch.
 - Enter the main dashboard.
 - Click "+" to add a credential.
   - Required: Name, Key, Secret
   - Optional: URL, Browser
 - Use the action buttons:
-  - **Copy Key** / **Copy Secret** to clipboard
-  - **Open Browser** to open the stored URL
-  - **Manage** to edit/delete entries
+  - **Copy Key🔑** / **Copy Secret🔒** to clipboard
+  - **🌐** to open the stored URL
+  - **🔧** to edit/delete entries
 - Close app using the window "X" button.
 
 ### Subsequent Runs
@@ -88,9 +82,8 @@ This project began as a personal challenge to create a secure, offline password 
 
 ## Common Troubleshooting
 
-- Make sure the downloaded `.zip` files aren't blocked by Windows.
-- If UI appears distorted, adjust the scaling values from PSD1 config file.
-
+- Make sure the downloaded `.zip` files aren't blocked by Windows. Unblock it from properties.
+  
 ---
 
 ## Reset the Application
@@ -103,7 +96,7 @@ This project began as a personal challenge to create a secure, offline password 
 ## Must Know
 
 - Forgotten PINs cannot be recovered.
-- Backup `encryptfiles` and `secret` folders, in case you forgot the pin.
+- Backup `ENCRYPTION_KEYS` and `SECRET_RECORDS` folders before you modify the script.
 - A small command window will remain open due to how the script is launched (this is normal and can be minimized).
 
 ---
@@ -111,6 +104,7 @@ This project began as a personal challenge to create a secure, offline password 
 ## To-Do / Roadmap
 
 - Package PSK for cross-platform support (Mac/Linux).
+- Create centralized config PSD1 file.
 - Add URL validation.
 - Support for PowerShell 7.x series.
 
@@ -138,7 +132,7 @@ This project began as a personal challenge to create a secure, offline password 
 
 ## Security
 
-- Partial user-key + random key encryption.
+- user-key + random key encryption.
 - All data stored locally and securely.
 
 ---
