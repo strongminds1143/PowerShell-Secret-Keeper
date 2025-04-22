@@ -1054,7 +1054,7 @@ function start_script
     $global:secretfiles_path = ".\PSK_FILES_DONOTDELETE\SECRET_RECORDS"
     
     Add-Type -AssemblyName 'System.Windows.Forms'
-    
+    #--------Thanks to Santiago Squarzon on Stack Overflow for providing the below code snippet ----------------------
     Add-Type -TypeDefinition '
     public class DPIAware
     {
@@ -1065,7 +1065,7 @@ function start_script
 
     [System.Windows.Forms.Application]::EnableVisualStyles()
     [void] [DPIAware]::SetProcessDPIAware()
-
+    # -------- https://stackoverflow.com/a/74933876 --------------
     if(Test-Path $global:encryptionkeypath)
     {
         LogEvent -Source $source -Type "INFO" -Message "Encryption key found, setting pin status to 'askpin'."
