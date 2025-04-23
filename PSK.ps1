@@ -58,7 +58,7 @@ function MainUI {
     $global:PSK_UI.FormBorderStyle = "FixedDialog"
     $global:PSK_UI.StartPosition = "CenterScreen"
 
-    Write-Host "here"
+    
     LogEvent -Source $Source -Type "INFO" -Message "UI configured."
 
     $result = pinUI
@@ -143,7 +143,7 @@ function MainUI {
         LogEvent -Source $Source -Type "INFO" -Message "UI displayed."
     }
     else {
-        Write-Host "inelse"
+
         LogEvent -Source $Source -Type "ERROR" -Message "PinUI function failed."
     }
 }
@@ -208,7 +208,7 @@ function openlink_action {
                 return
             }
             default {
-                Write-Host "Unsupported browser selection: $browser"
+                
                 LogEvent -Source $Source -Type "ERROR" -Message "Unsupported browser selection: $browser for record $rownumber"
                 return
             }
@@ -747,7 +747,7 @@ function add_copy_key_button
 function copy_key_action
 {
     $source = "copy_key_action"
-    Write-Host "copied key"
+    
     $currentrownumber = ($global:data_grid.CurrentRow).Index + 1
     LogEvent -Source $source -Type "INFO" -Message "Copied key from row $currentrownumber"
     copy_secret_action -currentrow $currentrownumber -type "Key"
@@ -778,14 +778,14 @@ function add_copy_secret_button
 function copy_secret_action($currentrow,$type)
 {
     $source = "copy_secret_action"
-    Write-Host "copied secret $currentrow"
+    
     $temp_file_raw = gc "$global:secretfiles_path\$currentrow.secret"
     if($type -eq "secret")
     {
         $secret_line = $temp_file_raw[4]
         $temp_secret = ConvertTo-SecureString -String $secret_line -Key $global:keybytes
         $clipboarddata = getplainpin -pin $temp_secret
-        Write-Host $temp_secret, $clipboarddata
+        
     }
     if($type -eq "key")
     {
@@ -817,7 +817,7 @@ function add_button
 function add_button_action
 {
     $source = "add_button_action"
-    Write-Host "clicked"
+    
     $global:PSK_UI.Controls.Clear()
     $global:PSK_UI.MinimumSize = [System.Drawing.Size]::new(490,350)
     $global:PSK_UI.MaximumSize = [System.Drawing.Size]::new(490,350)
@@ -836,22 +836,21 @@ function submit_button_action
     
     if($psk_name -and $psk_key -and $psk_secret -and $psk_name -ne " " -and $psk_key -ne " " -and $psk_secret -ne " " -and $psk_name -ne "Name" -and $psk_key -ne "Key" -and $psk_secret -ne "Secret" )
     {
-        Write-Host "data is there"
+        
         if($psk_link -eq "" -or $psk_link -eq " " -or $psk_link -eq $null -or $psk_link -eq 'URL')
         {
             $psk_link = "None"
         }
-        Write-Host $psk_name,$psk_key $psk_secret,$psk_link,$psk_browser
+        
         $temp_var = @($psk_name,$psk_key,$psk_link,$psk_browser)
         $temp_varsecure = ConvertTo-SecureString -String $psk_secret -AsPlainText -Force
         $encoded_secret = ConvertFrom-SecureString -SecureString $temp_varsecure -Key $Global:keybytes
         $temp_var += $encoded_secret
         $temp_filename = getfilenumber
-        Write-Host $temp_var,$temp_filename
-        Write-Host $global:editflag
+        
         if($global:editflag)
         {
-            Write-Host $global:data_grid.CurrentRow.Index
+            
             set-content "$Global:secretfiles_path\$($global:data_grid.CurrentRow.Index +1).secret" -Value $temp_var -Force
         }
         else
@@ -859,13 +858,13 @@ function submit_button_action
             set-content "$Global:secretfiles_path\$temp_filename.secret" -Value $temp_var -Force
         }
         $global:editflag = $false
-        Write-Host $global:editflag
+        
         bringback_mainUI
         LogEvent -Source $source -Type "INFO" -Message "Secret data submitted and saved successfully."
     }
     else
     {
-        Write-Host "empty"
+        
         $global:tb_secret.BackColor = [System.Drawing.Color]::FromArgb(255, 204, 204)
         $global:tb_name.BackColor = [System.Drawing.Color]::FromArgb(255, 204, 204)
         $global:tb_key.BackColor = [System.Drawing.Color]::FromArgb(255, 204, 204)
@@ -1021,8 +1020,7 @@ function getfilenumber
         $counter = 1
         foreach($file in $files)
         {
-            Write-Host "$global:secretfiles_path\$counter.temp"
-            Write-Host "$global:secretfiles_path\$counter.secret" 
+             
             Rename-Item $file.fullname "$counter.secret" 
             $counter++
         }
@@ -1081,4 +1079,3 @@ function start_script
 }
 
 start_script
-
