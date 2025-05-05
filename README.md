@@ -11,11 +11,12 @@ GitHub: [@strongminds1143](https://github.com/strongminds1143/)
 
 ## Version
 
-1.0
+v1.0.0 - ( Apr 23, 2025 ) Initial version of PSK. 
+v1.0.1 - ( May 5, 2025 ) Fixed the 'getinstalledbrowsers' function to look for installed browsers from registry instead of using harcoded .exe paths
 
 ## Overview
 
-PSKv1.0 is a UI-based PowerShell script that serves as an offline password manager. It allows users to securely store, manage, and retrieve credentials. Credentials are encrypted using a custom key—partially derived from user input and partially randomly generated—for enhanced security. The tool is optimized for Windows systems.
+PSKv1.0.1 is a UI-based PowerShell script that serves as an offline password manager. It allows users to securely store, manage, and retrieve credentials. Credentials are encrypted using a custom key—partially derived from user input and partially randomly generated—for enhanced security. The tool is optimized for Windows systems.
 
 ---
 
