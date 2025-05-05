@@ -1,4 +1,35 @@
-﻿function LogEvent {
+<#
+.VERSION
+    v1.0.0 - ( Apr 23, 2025 ) Initial version of PSK.
+    v1.0.1 - ( May 5, 2025 ) 
+           - Fixed the 'getinstalledbrowsers' function to look for installed browsers from registry instead of using harcoded .exe paths.
+           - Corrected name of private modes respective to browser
+
+.LICENSE
+    MIT License
+
+    Copyright (c) 2025 Krishnaprasad Narayanankutty
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+#>
+function LogEvent {
     param (
         [string]$Source,
         [string]$Type,
@@ -51,7 +82,7 @@ function MainUI {
     $global:PSK_UI = New-Object System.Windows.Forms.Form
     LogEvent -Source $Source -Type "INFO" -Message "Created new Form object for UI."
 
-    $global:PSK_UI.Text = "PSK v1.0"
+    $global:PSK_UI.Text = "PSK v1.0.1"
     $global:PSK_UI.MaximizeBox = $false
     $global:PSK_UI.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::Dpi
     $global:PSK_UI.AutoScale = $false
@@ -169,7 +200,8 @@ function openlink_action {
         $args = @()
 
         switch ($browser) {
-            'Google Chrome' {
+            'Google Chrome'
+                        {
                 $exe = "chrome.exe"
                 $args = @($link)
             }
@@ -181,7 +213,7 @@ function openlink_action {
                 $exe = "firefox.exe"
                 $args = @($link)
             }
-            '[Incognito]Mozilla Firefox' {
+            '[Private]Mozilla Firefox' {
                 $exe = "firefox.exe"
                 $args = @("-private-window", $link)
             }
@@ -189,15 +221,15 @@ function openlink_action {
                 $exe = "msedge.exe"
                 $args = @($link)
             }
-            '[Incognito]Microsoft Edge' {
+            '[InPrivate]Microsoft Edge' {
                 $exe = "msedge.exe"
                 $args = @("--inprivate", $link)
             }
-            'Opera' {
+            'Opera Browser' {
                 $exe = "opera.exe"
                 $args = @($link)
             }
-            '[Incognito]Opera' {
+            '[Private]Opera Browser' {
                 $exe = "opera.exe"
                 $args = @("--private", $link)
             }
@@ -702,31 +734,85 @@ function add_edit_UI {
     LogEvent -Source $source -Type "INFO" -Message "All UI controls added to main form."
 }
 
-
 function getinstalledbrowsers {
+    LogEvent -Source $source -Type "INFO" -Message "Started to fetch for installed browsers."
     $source = "getinstalledbrowsers"
 
-    $browsers = @(
-        @{ Name = 'Google Chrome'; Path = 'C:\Program Files\Google\Chrome\Application\chrome.exe' },
-        @{ Name = 'Mozilla Firefox'; Path = 'C:\Program Files\Mozilla Firefox\firefox.exe' },
-        @{ Name = 'Microsoft Edge'; Path = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' },
-        @{ Name = 'Opera'; Path = 'C:\Program Files\Opera\opera.exe' }
-    )
+    $roots = @(
+        "HKLM:\SOFTWARE\Clients\StartMenuInternet",
+        "HKLM:\SOFTWARE\WOW6432Node\Clients\StartMenuInternet",
+        "HKCU:\Software\Clients\StartMenuInternet"
+    ) #Will be added to PowerShell Data file later.
+
+    LogEvent -Source $source -Type "INFO" -Message "Current registry paths added is $($roots.Count)."
+
+    $browsers = @()
     $availablebrowsers = @("None")
-    foreach ($browser in $browsers) {
-        if (Test-Path $browser.Path) {
-            $availablebrowsers += $browser.name
-            $availablebrowsers += "[Incognito]$($browser.name)"
-            LogEvent -Source $source -Type "INFO" -Message "$($browser.Name) found at $($browser.Path)."
+
+    foreach ($root in $roots) {
+        LogEvent -Source $source -Type "INFO" -Message "Current registry path $root."
+        if (Test-Path $root) {
+            try {
+                $Error.Clear()
+                Get-ChildItem -Path $root -Recurse | Where-Object {$_.property -match "ApplicationName"} | ForEach-Object {
+                    $itemProperties = Get-ItemProperty $_.pspath
+                    $applicationName = $itemProperties.ApplicationName
+                    $applicationpath = ($itemProperties.ApplicationIcon -split ',')[0]
+                    $applicationexe = $applicationpath.split('\')[-1]
+                    $browsers += @{ Name = $applicationName; Path = $applicationpath }
+
+                    if (Test-Path $applicationpath) {
+                        #Just to standardize the names. Since current version only support commands for commonly used Windows browsers Opera, Chrome, Firefox and Edge.
+                        switch -Wildcard ($applicationName) {
+                            '*Chrome*' {
+                                $applicationName = "Google Chrome"
+                                $availablebrowsers += "$applicationName"
+                                $availablebrowsers += "[Incognito]$applicationName"
+                            }
+
+                            '*Firefox*' {
+                                $applicationName = "Mozilla Firefox"
+                                $availablebrowsers += "$applicationName"
+                                $availablebrowsers += "[Private]$applicationName"
+                            }
+
+                            '*Edge*' {
+                                $applicationName = "Microsoft Edge"
+                                $availablebrowsers += "$applicationName"
+                                $availablebrowsers += "[InPrivate]$applicationName"
+                            }
+
+                            '*opera*' {
+                                $applicationName = "Opera Browser"
+                                $availablebrowsers += "$applicationName"
+                                $availablebrowsers += "[Private]$applicationName"
+                            }
+
+                            default {
+                                LogEvent -Source $Source -Type "ERROR" -Message "Unsupported browser selection: $browser."
+                                return
+                            }
+                        }
+
+                        LogEvent -Source $source -Type "INFO" -Message "$applicationName found at $applicationpath."
+                    }
+                    else {
+                        LogEvent -Source $source -Type "WARNING" -Message "Executable file for $applicationName not found at $applicationpath."
+                    }
+                } -ErrorAction Stop
+            }
+            catch {
+                LogEvent -Source $source -Type "ERROR" -Message "Error occured while trying to fetch browser details from $root.\n$Error"
+            }
         }
-        elseif (-not (Test-Path $browser.Path)) {
-            LogEvent -Source $source -Type "WARNING" -Message "$($browser.Name) not found at $($browser.Path)."
+        else {
+            LogEvent -Source $source -Type "WARNING" -Message "Current registry path $root does not exist. Please check and update the path for function 'getinstalledbrowsers'."
         }
     }
-    LogEvent -Source $source -Type "INFO" -Message "Checked and returned list of installed browsers."
-    return $availablebrowsers
-}
 
+    LogEvent -Source $source -Type "INFO" -Message "Checked and returned list of installed browsers."
+    return $availablebrowsers | select -Unique
+}
 
 function add_copy_key_button
 {
@@ -878,7 +964,7 @@ function submit_button_action
 function bringback_mainUI
 {
     $source = "bringback_mainUI"
-    $global:PSK_UI.Text = "PowerShell Secret Keeper v1.0"
+    $global:PSK_UI.Text = "PSK v1.0.1"
     $global:PSK_UI.MaximizeBox = $false
     $global:PSK_UI.AutoScaleMode = "none"
     $global:PSK_UI.AutoScale = $false
