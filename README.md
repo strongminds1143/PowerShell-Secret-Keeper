@@ -100,6 +100,7 @@ This project began as a personal challenge to create a secure, offline password 
 
 - Forgotten PINs cannot be recovered.
 - Backup `ENCRYPTION_KEYS` and `SECRET_RECORDS` folders before you modify the script.
+- To use the new releases of PSK, make sure you copy paste the `ENCRYPTION_KEYS` and `SECRET_RECORDS` folders to the new script folders after running the CONFIG.BAT
 - A small command window will remain open due to how the script is launched (this is normal and can be minimized).
 
 ---
