@@ -1,4 +1,4 @@
-<#
+﻿<#
 .VERSION
     v1.0.0 - ( Apr 23, 2025 ) Initial version of PSK.
     v1.0.1 - ( May 5, 2025 ) 
