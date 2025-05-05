@@ -11,8 +11,10 @@ GitHub: [@strongminds1143](https://github.com/strongminds1143/)
 
 ## Version
 
-v1.0.0 - ( Apr 23, 2025 ) Initial version of PSK. 
-v1.0.1 - ( May 5, 2025 ) Fixed the 'getinstalledbrowsers' function to look for installed browsers from registry instead of using harcoded .exe paths
+- **v1.0.0** - ( Apr 23, 2025 ) Initial version of PSK.
+- **v1.0.1** - ( May 5, 2025 )
+  - Fixed the 'getinstalledbrowsers' function to look for installed browsers from registry instead of using harcoded .exe paths.
+  - Corrected name of private modes respective to browser
 
 ## Overview
 
@@ -141,6 +143,7 @@ This project began as a personal challenge to create a secure, offline password 
 ## Known Issues
 
 - Limited to Windows only for now.
+- For Opera, PSK can handle only the standard Opera Web Browser (versions 108+).Since it uses 'opera.exe' in commands.
 
 ---
 
